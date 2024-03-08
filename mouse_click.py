@@ -62,7 +62,7 @@ def mouse_left_click():
     # Define default start and end times
     default_start_time = datetime.time(9, 0)
     default_end_time = datetime.time(18, 0)
-    default_delay_time = 180
+    default_delay_time = 180  # unit is seconds
 
     # Get start and end times from the user or use defaults
     work_start, work_end = get_validated_time_range(
@@ -84,8 +84,11 @@ def mouse_left_click():
     while True:
         try:
             if is_click_time_enabled(work_start, work_end):
-                pyautogui.click(target_x, target_y)
+                # Click the mouse at the desired
+                pyautogui.click(target_x, target_y, button='left')
+                # Move the mouse cursor to the original position
                 current_x, current_y = pyautogui.position()
+                # Move the mouse cursor to the original position
                 pyautogui.moveTo(current_x, current_y)
                 print(f'Mouse left clicked at: {target_x}, {target_y}')
             else:

@@ -8,17 +8,17 @@ def test_is_time_in_range():
     start = datetime.time(8, 0)
     end = datetime.time(18, 0)
     current_time = datetime.time(12, 30)
-    assert is_time_in_range(start, end, current_time) == True
-    assert is_time_in_range(end, start, current_time) == False
+    assert is_time_in_range(start, end, current_time) is True
+    assert is_time_in_range(end, start, current_time) is False
 
     current_time = datetime.time(7, 59)
-    assert is_time_in_range(start, end, current_time) == False
+    assert is_time_in_range(start, end, current_time) is False
     current_time = datetime.time(8, 0)
-    assert is_time_in_range(start, end, current_time) == True
+    assert is_time_in_range(start, end, current_time) is True
     current_time = datetime.time(18, 0)
-    assert is_time_in_range(start, end, current_time) == True
+    assert is_time_in_range(start, end, current_time) is True
     current_time = datetime.time(18, 1)
-    assert is_time_in_range(start, end, current_time) == False
+    assert is_time_in_range(start, end, current_time) is False
 
 
 def test_get_time_from_user(monkeypatch):
