@@ -67,7 +67,7 @@ def mouse_left_click():
     # Get start and end times from the user or use defaults
     work_start, work_end = get_validated_time_range(
         ("Enter the start time (HH:MM)(24-hour clock) or 'd' for default (%s): " % default_start_time.strftime("%H:%M")),
-        ("Enter the end time (HH:MM)(24-hour clock) or 'd' for default (%s): " % default_start_time.strftime("%H:%M")),
+        ("Enter the end time (HH:MM)(24-hour clock) or 'd' for default (%s): " % default_end_time.strftime("%H:%M")),
         default_start_time, default_end_time)
 
     # Get delay time from the user or use default
