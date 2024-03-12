@@ -84,10 +84,10 @@ def mouse_left_click():
     while True:
         try:
             if is_click_time_enabled(work_start, work_end):
-                # Click the mouse at the desired
-                pyautogui.click(target_x, target_y, button='left')
-                # Move the mouse cursor to the original position
+                # Record the mouse cursor to the original position
                 current_x, current_y = pyautogui.position()
+                # Click the mouse at the desired position
+                pyautogui.click(target_x, target_y, button='left')
                 # Move the mouse cursor to the original position
                 pyautogui.moveTo(current_x, current_y)
                 print(f'Mouse left clicked at: {target_x}, {target_y}')
