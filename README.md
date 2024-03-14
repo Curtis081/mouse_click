@@ -9,7 +9,7 @@ Open terminal
 ```script
 pip install pyinstaller
 ```
-#### Create an Executable using PyInstaller
+Create an Executable using PyInstaller
 ```script
 pyinstaller main.py --onefile --name='mouse_click'
 ```
