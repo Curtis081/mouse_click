@@ -17,15 +17,15 @@ pyinstaller main.py --onefile --name='mouse_click'
 ## Author Information
 
 ### Name
-Curtis Hsu(Hsu Ying-Hao)
+Curtis Hsu(Ying-Hao Hsu)
 
 ### Creation Date
 March 7, 2024
 
 ### Contact Information
 - **Email**: ar06053127hga@hotmail.com.tw
-- **GitHub**: [CurtisHsuGitHub](https://github.com/Curtis081)
-- **LinkedIn**: [CurtisHsuLinkedIn](https://www.linkedin.com/in/yinghaohsu/)
+- **GitHub**: [Curtis081](https://github.com/Curtis081)
+- **LinkedIn**: [Curtis Hsu(Ying-Hao Hsu)](https://www.linkedin.com/in/yinghaohsu/)
 
 #### Note
 For any inquiries or contributions regarding this project, please feel free to contact me through the above channels. If reporting bugs or requesting features, consider opening an issue on GitHub for public tracking and documentation.
