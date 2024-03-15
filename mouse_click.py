@@ -2,6 +2,9 @@ import pyautogui
 import time
 import datetime
 from typing import Tuple
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
 
 
 def is_time_in_range(start: datetime.time, end: datetime.time, current_time: datetime.time) -> bool:
@@ -59,6 +62,8 @@ def get_delay_time(prompt: str, default_delay: int = 180) -> int:
 
 
 def mouse_left_click():
+    colorama_init()
+
     # Define default start and end times
     default_start_time = datetime.time(9, 0)
     default_end_time = datetime.time(18, 0)
@@ -75,26 +80,27 @@ def mouse_left_click():
                                  % str(default_delay_time/60)), default_delay_time)
 
     while input('Move the mouse to the desired position, '
-                'press \'p\' and press \'enter\' to capture the position:') != 'p':
+                'press \'p\' and then press \'enter\' to capture the position:') != 'p':
         pass  # Wait for the user to press 'p'
 
     target_x, target_y = pyautogui.position()
     print(f"Mouse position set to: {target_x}, {target_y}")
 
-    while True:
-        try:
+    try:
+        while True:
             if is_click_time_enabled(work_start, work_end):
                 # Record the mouse cursor to the original position
                 current_x, current_y = pyautogui.position()
                 # Click the mouse at the desired position
                 pyautogui.click(target_x, target_y, button='left')
                 # Move the mouse cursor to the original position
-                pyautogui.moveTo(current_x, current_y)
+                pyautogui.moveTo(current_x , current_y)
                 print(f'Mouse left clicked at: {target_x}, {target_y}')
             else:
                 print("Outside allowed click time. Skipping click.")
-
-            print("Current time:", time.ctime())
             time.sleep(delay_time)
-        except Exception as e:
-            print(f"An error occurred: {e}")
+            print("Current time:", time.ctime())
+    except KeyError:
+        pass
+    except Exception as e:
+        print(f"{Fore.RED}An error occurred:{Style.RESET_ALL} {e}")
