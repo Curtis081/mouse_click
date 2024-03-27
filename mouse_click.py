@@ -5,6 +5,20 @@ from typing import Tuple
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
+import logging
+import threading
+import keyboard
+
+
+def get_event_check_enabled(prompt: str) -> bool:
+    """Prompt the user for event check enable or use the default is yes."""
+    while True:
+        user_input = input(prompt).strip()
+        if user_input.lower() == 'n':
+            event_check_enabled = False
+        else:
+            event_check_enabled = True
+        return event_check_enabled
 
 
 def is_time_in_range(start: datetime.time, end: datetime.time, current_time: datetime.time) -> bool:
@@ -61,13 +75,46 @@ def get_delay_time(prompt: str, default_delay: int = 180) -> int:
             print("Invalid input. Please enter an integer or press 'd' for default.")
 
 
+def logging_basic_config():
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="%(relativeCreated)6d %(threadName)s %(message)s"
+    )
+
+
+pressed_key = "f4"
+
+
+def keyboard_is_pressed(event):
+    check_is_pressed_time = 0.2
+
+    while not event.isSet():
+        logging.debug("keyboard_is_pressed thread checking in")
+        event.wait(check_is_pressed_time)
+        if keyboard.is_pressed(pressed_key):
+            event.set()
+
+
 def mouse_left_click():
     colorama_init()
+    logging_basic_config()
+    event = threading.Event()
+
+    logging.debug("mouse_left_click function initialized")
 
     # Define default start and end times
     default_start_time = datetime.time(9, 0)
     default_end_time = datetime.time(18, 0)
     default_delay_time = 180  # unit is seconds
+
+    # Get check enabled from the user or use default
+    event_check_enabled = get_event_check_enabled("If you NEED disable press \'%s\' to exit the program, "
+                                                  "please enter (N/n), default is not disable: " % pressed_key.upper())
+
+    if event_check_enabled:
+        event.clear()
+        thread_keyboard_is_pressed = threading.Thread(target=keyboard_is_pressed, args=(event,))
+        thread_keyboard_is_pressed.start()
 
     # Get start and end times from the user or use defaults
     work_start, work_end = get_validated_time_range(
@@ -84,10 +131,11 @@ def mouse_left_click():
         pass  # Wait for the user to press 'p'
 
     target_x, target_y = pyautogui.position()
-    print(f"Mouse position set to: {target_x}, {target_y}")
+    logging.info(f"Mouse position set to: {target_x}, {target_y}")
 
-    try:
-        while True:
+    while not event.isSet():
+        logging.debug("mouse_left_click while loop")
+        try:
             if is_click_time_enabled(work_start, work_end):
                 # Record the mouse cursor to the original position
                 current_x, current_y = pyautogui.position()
@@ -98,9 +146,10 @@ def mouse_left_click():
                 print(f'Mouse left clicked at: {target_x}, {target_y}')
             else:
                 print("Outside allowed click time. Skipping click.")
-            time.sleep(delay_time)
-            print("Current time:", time.ctime())
-    except KeyError:
-        pass
-    except Exception as e:
-        print(f"{Fore.RED}An error occurred:{Style.RESET_ALL} {e}")
+            print("Current time: %s", time.ctime())
+            event.wait(delay_time)
+        except KeyError as e:
+            logging.error(f"{Fore.GREEN}An error occurred:{Style.RESET_ALL} {e}")
+            pass
+        except Exception as e:
+            logging.error(f"{Fore.RED}An error occurred:{Style.RESET_ALL} {e}")
