@@ -1,4 +1,8 @@
 ## Introduction(簡介)
+<a href="https://github.com/Curtis081/mouse_click/tree/master/dist"><img src=" https://img.shields.io/badge/.EXE%20file-green.svg?logo=GitHub" alt=".exe file"></a>
+<a href="https://www.python.org/"><img src=" https://img.shields.io/badge/.Python-white.svg?logo=Python" alt="python icon"></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+
 This Python script is a demonstration using the PyAutoGUI library to simulate mouse clicks at specific times. The script captures user input for start and end times, delay time, and records the initial mouse position. It then continuously checks the current time and simulates a left mouse click within the specified time range.
 
 
@@ -11,7 +15,7 @@ pip install pyinstaller
 ```
 Create an Executable using PyInstaller
 ```script
-pyinstaller main.py --onefile --name='mouse_click'
+pyinstaller --onefile -c -i ./icon/mouse_click_icon.ico --name='mouse_click' --clean main.py
 ```
 
 ## Author Information

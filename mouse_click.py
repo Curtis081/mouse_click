@@ -142,11 +142,11 @@ def mouse_left_click():
                 # Click the mouse at the desired position
                 pyautogui.click(target_x, target_y, button='left')
                 # Move the mouse cursor to the original position
-                pyautogui.moveTo(current_x , current_y)
+                pyautogui.moveTo(current_x, current_y)
                 print(f'Mouse left clicked at: {target_x}, {target_y}')
             else:
                 print("Outside allowed click time. Skipping click.")
-            print("Current time: %s", time.ctime())
+            print("Current time: ", time.ctime())
             event.wait(delay_time)
         except KeyError as e:
             logging.error(f"{Fore.GREEN}An error occurred:{Style.RESET_ALL} {e}")
