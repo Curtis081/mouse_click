@@ -1,6 +1,6 @@
 import sys
 
-from MouseAutomation import MouseAutomation
+from src.MouseAutomation import MouseAutomation
 
 
 def main() -> int:
