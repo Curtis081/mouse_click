@@ -1,0 +1,119 @@
+name: Generate executable file and upload to GitHub Releases
+
+env:
+  SOURCE_FILE_MAIN_NAME: './src/main.py'
+  EXECUTEABLE_FILE_NAME: mouse_automation
+  EXECUABLE_FILES_FOLDER_PATH: './dist/mouse_automation/'
+  MY_ARTIFACT_NAME: execuable_files_folder
+  EXECUTEABLE_ZIP_FILE_NAME: mouse_automation
+  PYTHON_VERSION: 3.12
+  PYTEST_TEST_UNIT_PATH: './test_unit/test_MouseAutomation.py'
+
+on:
+  push:
+    branches: [ "master" ]
+
+permissions:
+  contents: write
+  actions: read
+  deployments: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Test with pytest
+        run: |
+          pytest ${{ env.PYTEST_TEST_UNIT_PATH }}
+
+      - name: Build with PyInstaller
+        run: pyinstaller -y -c --icon='./icon/app.ico' --name=${{ env.EXECUTEABLE_FILE_NAME }} --clean ${{ env.SOURCE_FILE_MAIN_NAME }}
+
+      - name: Upload my artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.MY_ARTIFACT_NAME }}
+          path: ${{ env.EXECUABLE_FILES_FOLDER_PATH }}
+
+  release:
+    name: Release exe folder to GitHub Releases
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download my artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.MY_ARTIFACT_NAME }}
+
+      - name: Read version number
+        id: read-version
+        run: |
+          if (!(Test-Path -Path .version)) { Set-Content -Path .version -Value '0' }
+          $version = Get-Content -Path .version
+          echo "version=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Increment version number
+        id: increment-version
+        run: |
+          $version = [int](Get-Content -Path .version) + 1
+          echo "version=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create ZIP archive
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}.zip
+
+      - name: Create GitHub Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.version }}
+          release_name: Release v${{ env.version }}
+
+      - name: Upload asset to GitHub Release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}.zip
+          asset_name: ${{ env.EXECUTEABLE_ZIP_FILE_NAME }}_v${{ env.version }}.zip
+          asset_content_type: application/zip
+
+      - name: Update version number
+        if: success()
+        run: |
+          $version = $env:version
+          Set-Content -Path .version -Value $version
+
+      - name: Commit version update
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .version
+          git commit -m "Increment version number to $version"
+          git push origin HEAD:master
